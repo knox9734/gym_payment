@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <title>{% block title %}My Application{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{% url 'user_list' %}">Users</a></li>
+                <li><a href="{% url 'add_payment' %}">Add Payment</a></li>
+                <li><a href="{% url 'payment_list' %}">Payment List</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2023 My Application</p>
+    </footer>
+</body>
+</html>

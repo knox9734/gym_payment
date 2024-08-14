@@ -1,0 +1,25 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Payment List{% endblock %}
+
+{% block content %}
+<h1>Payment List</h1>
+<table>
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Payment Date</th>
+            <th>Expiration Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for payment in payments %}
+        <tr>
+            <td>{{ payment.user.first_name }} {{ payment.user.last_name }}</td>
+            <td>{{ payment.payment_date }}</td>
+            <td>{{ payment.expiration_date }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

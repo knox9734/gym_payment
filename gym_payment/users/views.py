@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 from .forms import UserRegistrationForm
-from .models import User
+from .models import User,Payment
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 import barcode
@@ -93,3 +93,16 @@ def delete_user(request, user_id):
     user = get_object_or_404(User, id=user_id)
     user.delete()
     return HttpResponseRedirect(reverse('user_list'))
+
+def add_payment(request):
+    if request.method == 'POST':
+        code = request.POST.get('code')
+        user = get_object_or_404(User, code=code)
+        Payment.objects.create(user=user)
+        return redirect('payment_list')
+    else:
+        return render(request, 'users/add_payment.html')
+
+def payment_list(request):
+    payments = Payment.objects.all()
+    return render(request, 'users/payment_list.html', {'payments': payments})

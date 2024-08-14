@@ -1,0 +1,13 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Add Payment{% endblock %}
+
+{% block content %}
+<h1>Add Payment for Next 30 Days</h1>
+<form method="post" action="{% url 'add_payment' %}">
+    {% csrf_token %}
+    <label for="code">User Code:</label>
+    <input type="text" id="code" name="code" required>
+    <button type="submit">Add Payment</button>
+</form>
+{% endblock %}
