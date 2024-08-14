@@ -60,7 +60,7 @@ nav {
 
 .nav-right a:hover {
     background-color: #30af10; /* Light background color on hover */
-    color: #000; /* Darker text color on hover */
+    color: #faf6f6; /* Darker text color on hover */
 }
 
 footer {

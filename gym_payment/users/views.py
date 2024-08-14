@@ -10,6 +10,8 @@ from PIL import Image,ImageDraw, ImageFont
 import os
 from django.db.models import Q
 from django.core.paginator import Paginator
+from datetime import datetime
+from datetime import timedelta
 
 def register_user(request):
     if request.method == 'POST':
@@ -104,11 +106,41 @@ def add_payment(request):
     if request.method == 'POST':
         code = request.POST.get('code')
         user = get_object_or_404(User, code=code)
-        Payment.objects.create(user=user)
+        payment = Payment.objects.filter(user=user).order_by('-expiration_date').first()
+        if payment:
+            payment.expiration_date = calculate_expiration_date()
+            payment.payment_date = datetime.now().date()
+            payment.save()
+        else:
+            Payment.objects.create(user=user)
         return redirect('payment_list')
     else:
         return render(request, 'users/add_payment.html')
 
+def calculate_expiration_date():
+    # Calculate the expiration date based on your logic
+    # For example, you can add a fixed number of days to the current date
+    expiration_date = datetime.now().date() + timedelta(days=15)
+    return expiration_date
+
 def payment_list(request):
     payments = Payment.objects.all()
     return render(request, 'users/payment_list.html', {'payments': payments})
+
+def check_payment_status(request):
+    code = request.GET.get('code')
+    user = None
+    payment_status = None
+
+    if code:
+        user = get_object_or_404(User, code=code)
+        payment = Payment.objects.filter(user=user).order_by('-expiration_date').first()
+        if payment:
+            if payment.expiration_date < datetime.now().date():
+                payment_status = 'Expired'
+            else:
+                payment_status = 'Active'
+        else:
+            payment_status = 'No payment details found'
+
+    return render(request, 'users/check_payment_status.html', {'user': user, 'payment_status': payment_status, 'code': code})

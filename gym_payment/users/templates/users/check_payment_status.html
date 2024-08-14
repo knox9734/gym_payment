@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+{% extends 'users/base.html' %}
+<head>
+  <title>{% block title %}Check Payment Status{% endblock %}</title>
+  {% block content %}
+  <style>
+    form {
+      margin-bottom: 20px;
+    }
+    
+    input[type="text"] {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    
+    button[type="submit"] {
+      padding: 8px 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    button[type="submit"]:hover {
+      background-color: #45a049;
+    }
+    
+    .status {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Check Payment Status</h2>
+  
+  <form method="get" action="{% url 'check_payment_status' %}">
+    <input type="text" name="code" placeholder="Enter user code" value="{{ code }}">
+    <button type="submit">Check Status</button>
+  </form>
+  
+  {% if user %}
+  <div class="status">
+    <p>User: {{ user.first_name }} {{ user.last_name }}</p>
+    <p>Payment Status: {{ payment_status }}</p>
+  </div>
+  {% endif %}
+  
+  {% endblock %}
+</body>
+</html>

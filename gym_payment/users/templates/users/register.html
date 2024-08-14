@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
+    {% extends 'users/base.html' %}
 <head>
-    <title>Register User</title>
+    <title>{% block title %}Register User{% endblock %}</title>
+    {% block content %}
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -52,5 +54,6 @@
         {{ form.as_p }}
         <button type="submit">Register</button>
     </form>
+    {% endblock %}
 </body>
 </html>

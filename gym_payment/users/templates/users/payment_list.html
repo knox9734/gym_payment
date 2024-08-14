@@ -8,6 +8,7 @@
     <thead>
         <tr>
             <th>User</th>
+            <th>Code</th>
             <th>Payment Date</th>
             <th>Expiration Date</th>
         </tr>
@@ -16,6 +17,7 @@
         {% for payment in payments %}
         <tr>
             <td>{{ payment.user.first_name }} {{ payment.user.last_name }}</td>
+            <td>{{ payment.user.code }} </td>
             <td>{{ payment.payment_date }}</td>
             <td>{{ payment.expiration_date }}</td>
         </tr>

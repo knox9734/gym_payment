@@ -10,13 +10,14 @@
         <nav>
             <div class="nav-left">
                 <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo">
-                <span class="app-name">Dolphin Fitness</span>
+                <span class="app-name" style="color: white;">Dolphin Fitness</span>
             </div>
             <ul class="nav-right">
                 <li><a href="{% url 'register_user' %}">Register user</a></li>
                 <li><a href="{% url 'user_list' %}">Users</a></li>
                 <li><a href="{% url 'add_payment' %}">Add Payment</a></li>
                 <li><a href="{% url 'payment_list' %}">Payment List</a></li>
+                <li><a href="{% url 'check_payment_status' %}">Payment Check</a></li>
             </ul>
         </nav>
     </header>
