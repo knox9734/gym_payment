@@ -13,7 +13,16 @@ from django.core.paginator import Paginator
 from datetime import datetime
 from datetime import timedelta
 from django.http import Http404
+import time as arduinoTime
+import serial
+from django.contrib.auth.decorators import login_required, user_passes_test
 
+arduino = serial.Serial(port='COM3', baudrate=9600, timeout=.1)
+def is_admin(user):
+    return user.is_authenticated and user.is_staff
+
+@login_required
+@user_passes_test(is_admin)  
 def register_user(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
@@ -85,6 +94,8 @@ def generate_barcode(code,firstname):
     print(barcode_image_path)
     return barcode_image_path
 
+@login_required
+@user_passes_test(is_admin)
 def user_list(request):
     query = request.GET.get('q')
     if query:
@@ -98,11 +109,15 @@ def user_list(request):
     
     return render(request, 'users/user_list.html', {'page_obj': page_obj, 'query': query})
 
+@login_required
+@user_passes_test(is_admin)
 def delete_user(request, user_id):
     user = get_object_or_404(User, id=user_id)
     user.delete()
     return HttpResponseRedirect(reverse('user_list'))
 
+@login_required
+@user_passes_test(is_admin)
 def add_payment(request):
     if request.method == 'POST':
         code = request.POST.get('code')
@@ -124,6 +139,8 @@ def calculate_expiration_date():
     expiration_date = datetime.now().date() + timedelta(days=28)
     return expiration_date
 
+@login_required
+@user_passes_test(is_admin)
 def payment_list(request):
     payments = Payment.objects.all()
     return render(request, 'users/payment_list.html', {'payments': payments})
@@ -141,18 +158,22 @@ def check_payment_status(request):
             if payment:
                 if payment.expiration_date < datetime.now().date():
                     payment_status = 'Expired'
+                    door_open('0')
                     return render(request, 'users/payment_expired.html')
                 else:
                     remaining_days = (payment.expiration_date - datetime.now().date()).days
                     payment_status = 'Active'
+                    door_open('1')
                     return render(request, 'users/welcome.html', {
                             'remaining_days': remaining_days,
                         })
             else:
                 payment_status = 'No payment details found'
+                door_open('0')
                 return render(request, 'users/payment_expired.html')
         except Http404:
             error_message = 'User not found'
+            door_open('0')
             return render(request, 'users/payment_expired.html')
     
     return render(request, 'users/check_payment_status.html', {
@@ -162,3 +183,51 @@ def check_payment_status(request):
         'error_message': error_message,
         'remaining_days': remaining_days if payment_status == 'Active' else None
     })
+
+def write_read(x):
+    
+    arduino.write(bytes(x, 'utf-8'))
+    arduinoTime.sleep(0.05)
+    data = arduino.readline()
+    return data
+
+def blink_led():
+    arduino.write(b'1')  # Sending '1' to the Arduino to trigger the LED blink
+    arduinoTime.sleep(0.05)
+    data = arduino.readline()
+    return data
+
+def door_open(value):
+    blinking_done = False
+
+    while not blinking_done:
+        random_value = '2'  # Change this to any random value other than '1'
+        response = write_read(random_value)
+        arduinoTime.sleep(1)
+        random_value = '2'  # Change this to any random value other than '1'
+        response = write_read(random_value)
+        arduinoTime.sleep(1)
+        print("Sent random value:", random_value)
+
+        num = value
+        arduinoTime.sleep(1)
+        if num == '1':
+            response = blink_led()
+            print("door opening:", response)
+            blinking_done = True
+        elif num == '0':
+            response = write_read('0')
+            print("not paid alarm:", response)
+            blinking_done = True
+        else:
+            print("Invalid input. Only '1' or '0' triggers the LED action.")
+
+from django.contrib.auth.views import LoginView
+
+class CustomLoginView(LoginView):
+    template_name = 'users/login.html'  # Specify the path to your login template
+    redirect_authenticated_user = True  # Redirect already authenticated users
+
+def welcome(request):
+
+    return render (request, 'users/home.html')

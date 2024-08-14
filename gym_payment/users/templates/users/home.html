@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Gym Fitness</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .nav-bar {
+            background: #444;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .nav-bar a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 1.1em;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            overflow: hidden;
+        }
+        .content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #333;
+            font-size: 2em;
+            margin-top: 0;
+        }
+        p {
+            color: #666;
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background: #333;
+            color: #fff;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Dolphin Fitness Gym </h1>
+    </header>
+
+    <nav class="nav-bar">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'check_payment_status' %}">Payment Check</a>
+        {% if user.is_authenticated %}
+        <a href="{% url 'user_list' %}">User List</a>
+        <a href="{% url 'register_user' %}">Register user</a>
+        <a href="{% url 'add_payment' %}">Add Payment</a>
+        
+            <form id="logout-form" action="{% url 'logout' %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" style="background:none; border:none; color:#fff; font-size:1em; cursor:pointer;">Logout</button>
+            </form>
+            {% else %}
+            <a href="{% url 'login' %}">Login</a>
+        {% endif %}
+        
+    </nav>
+
+    <div class="container">
+        <div class="content">
+            <h2>Welcome to Dolphin Fitness Gym</h2>
+            <p>Your journey to a healthier lifestyle starts here. Explore our facilities, book classes, and track your fitness progress with ease.</p>
+            <p>Sign up now to get started and take advantage of our special offers and membership benefits!</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Dolphin Fitness Gym. All rights reserved.</p>
+    </footer>
+</body>
+</html>

@@ -9,10 +9,22 @@
     <header>
         <nav>
             <div class="nav-left">
-                <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo">
-                <span class="app-name" style="color: white;">Dolphin Fitness</span>
+                <a href="{% url 'home' %}" style="text-decoration: none; color: inherit;">
+                    <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo">
+                    <span class="app-name" style="color: white;">Dolphin Fitness</span>
+                </a>
             </div>
+            
             <ul class="nav-right">
+                {% if user.is_authenticated %}
+                    <p>Welcome, {{ user.username }}! </p>
+                    <form id="logout-form" action="{% url 'logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}">Login</a>
+                {% endif %}
                 <li><a href="{% url 'register_user' %}">Register user</a></li>
                 <li><a href="{% url 'user_list' %}">Users</a></li>
                 <li><a href="{% url 'add_payment' %}">Add Payment</a></li>
