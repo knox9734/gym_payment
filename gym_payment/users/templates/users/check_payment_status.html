@@ -67,7 +67,8 @@
   <div class="container">
     <h2>Check Payment Status</h2>
     
-    <form method="get" action="{% url 'check_payment_status' %}">
+    <form method="post" action="{% url 'check_payment_status' %}">
+      {% csrf_token %}
       <input type="text" name="code" placeholder="Enter user code" value="{{ code|default_if_none:'' }}" id="user-code">
       <button type="submit">Check Status</button>
     </form>

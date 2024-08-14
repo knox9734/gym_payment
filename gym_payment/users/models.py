@@ -20,7 +20,7 @@ class Payment(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.expiration_date:
-            self.expiration_date = timezone.now().date() + timedelta(days=25)
+            self.expiration_date = timezone.now().date() + timedelta(days=30)
         super().save(*args, **kwargs)
 
     def __str__(self):

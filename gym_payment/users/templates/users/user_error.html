@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+  <title>Payment Expired</title>
+  <style>
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh; /* Full viewport height */
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .banner {
+      background-color: red;
+      color: white;
+      padding: 20px;
+      border-radius: 4px;
+      font-size: 18px;
+      animation: flash 1s infinite;
+    }
+
+    @keyframes flash {
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="banner">
+      {% if error_message %}
+        <p>Warning: {{ error_message }}!</p>
+        <p>Please register if you are a new user.</p>
+      {% endif %}
+      {% if payment_status %}
+      <p>Warning: {{ payment_status }}!</p>
+      <p>Please Complete Your Payment.</p>
+      {% endif %}
+      
+    </div>
+  </div>
+
+  <script>
+    window.onload = function() {
+    
+      setTimeout(function() {
+        window.location.href = "{% url 'check_payment_status' %}";
+      }, 10000); // Redirect after 10 seconds
+    }
+  </script>
+
+</body>
+</html>

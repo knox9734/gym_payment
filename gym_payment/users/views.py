@@ -136,7 +136,7 @@ def add_payment(request):
 def calculate_expiration_date():
     # Calculate the expiration date based on your logic
     # For example, you can add a fixed number of days to the current date
-    expiration_date = datetime.now().date() + timedelta(days=28)
+    expiration_date = datetime.now().date() + timedelta(days=30)
     return expiration_date
 
 @login_required
@@ -159,43 +159,45 @@ def payment_list(request):
     return render(request, 'users/payment_list.html', {'page_obj': page_obj, 'search_query': search_query})
 
 def check_payment_status(request):
-    code = request.GET.get('code')
-    user = None
-    payment_status = None
-    error_message = None
+    if request.method == 'POST':
+        code = request.POST.get('code')  # Use POST.get() for POST data
+        user = None
+        payment_status = None
+        error_message = None
+        remaining_days = None
 
-    if code:
-        try:
-            user = get_object_or_404(User, code=code)
-            payment = Payment.objects.filter(user=user).order_by('-expiration_date').first()
-            if payment:
-                if payment.expiration_date < datetime.now().date():
-                    payment_status = 'Expired'
-                    door_open('0')
-                    return render(request, 'users/payment_expired.html')
-                else:
-                    remaining_days = (payment.expiration_date - datetime.now().date()).days
-                    payment_status = 'Active'
-                    door_open('1')
-                    return render(request, 'users/welcome.html', {
+        if code:
+            try:
+                user = get_object_or_404(User, code=code)
+                payment = Payment.objects.filter(user=user).order_by('-expiration_date').first()
+                if payment:
+                    if payment.expiration_date < datetime.now().date():
+                        payment_status = 'Expired'
+                        door_open('0')
+                        return render(request, 'users/payment_expired.html')
+                    else:
+                        remaining_days = (payment.expiration_date - datetime.now().date()).days
+                        payment_status = 'Active'
+                        door_open('1')
+                        return render(request, 'users/welcome.html', {
                             'remaining_days': remaining_days,
                         })
-            else:
-                payment_status = 'No payment details found'
-                door_open('0')
-                return render(request, 'users/payment_expired.html')
-        except Http404:
-            error_message = 'User not found'
-            door_open('0')
-            return render(request, 'users/payment_expired.html')
+                else:
+                    payment_status = 'No payment details found'
+                    
+            except Http404:
+                error_message = 'User not found'
+        
+        return render(request, 'users/user_error.html', {
+            'user': user,
+            'payment_status': payment_status,
+            'code': code,
+            'error_message': error_message,
+            'remaining_days': remaining_days
+        })
     
-    return render(request, 'users/check_payment_status.html', {
-        'user': user,
-        'payment_status': payment_status,
-        'code': code,
-        'error_message': error_message,
-        'remaining_days': remaining_days if payment_status == 'Active' else None
-    })
+    # Handle GET requests by rendering the form
+    return render(request, 'users/check_payment_status.html')
 
 def write_read(x):
     
