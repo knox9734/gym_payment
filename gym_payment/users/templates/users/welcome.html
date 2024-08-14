@@ -20,12 +20,36 @@
             border-radius: 4px;
             font-size: 18px;
         }
+
+        .countdown {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
     </style>
     <script>
-        // Redirect back to the payment check page after 20 seconds
-        setTimeout(function() {
-            window.location.href = "{% url 'check_payment_status' %}";
-        }, 20000);
+        // Function to update the countdown timer
+        function startCountdown(duration, display) {
+            var timer = duration, seconds;
+            var interval = setInterval(function () {
+                seconds = parseInt(timer % 60, 10);
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+
+                display.textContent = seconds + " seconds remaining";
+
+                if (--timer < 0) {
+                    clearInterval(interval);
+                    window.location.href = "{% url 'check_payment_status' %}";
+                }
+            }, 1000);
+        }
+
+        window.onload = function () {
+            // 20 seconds countdown
+            var countdownDuration = 20;
+            var display = document.querySelector('.countdown');
+            startCountdown(countdownDuration, display);
+        };
     </script>
 </head>
 <body>
@@ -36,6 +60,7 @@
             <p>Your login is approved.</p>
             <p>Days Remaining: {{ remaining_days }}</p>
         </div>
+        <p class="countdown"></p>
         <p>You will be redirected back to the payment check page in 20 seconds.</p>
     </div>
 
