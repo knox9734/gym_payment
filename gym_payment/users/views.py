@@ -142,8 +142,21 @@ def calculate_expiration_date():
 @login_required
 @user_passes_test(is_admin)
 def payment_list(request):
-    payments = Payment.objects.all()
-    return render(request, 'users/payment_list.html', {'payments': payments})
+    # Get search query from GET parameters
+    search_query = request.GET.get('search', '')
+
+    # Filter payments based on search query
+    if search_query:
+        payments = Payment.objects.filter(Q(user__code__icontains=search_query))
+    else:
+        payments = Payment.objects.all()
+
+    # Paginate the filtered payments
+    paginator = Paginator(payments, 15)  # Show 15 payments per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'users/payment_list.html', {'page_obj': page_obj, 'search_query': search_query})
 
 def check_payment_status(request):
     code = request.GET.get('code')
