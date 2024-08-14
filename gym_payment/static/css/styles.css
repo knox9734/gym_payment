@@ -1,0 +1,73 @@
+/* Ensure the body and html take full height */
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Main content should take all available space */
+main {
+    flex: 1;
+}
+
+header {
+    padding: 10px 20px;
+    background-color: #004d00; /* Dark green background color */
+    border-bottom: 1px solid #ddd;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    height: 60px; /* Increased size of the logo */
+    margin-right: 10px;
+    border-radius: 50%; /* Make the logo round */
+}
+
+.app-name {
+    font-size: 28px; /* Increased size of the text */
+    font-weight: bold;
+}
+
+.nav-right {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-right li {
+    margin-left: 20px;
+}
+
+.nav-right a {
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 16px;
+    padding: 10px 15px;
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effects */
+}
+
+.nav-right a:hover {
+    background-color: #30af10; /* Light background color on hover */
+    color: #000; /* Darker text color on hover */
+}
+
+footer {
+    padding: 10px 20px;
+    background-color: #004d00; /* Dark green background color */
+    color: #ffffff; /* White text color */
+    text-align: center;
+    border-top: 1px solid #ddd;
+    margin-top: auto; /* Push footer to the bottom */
+}

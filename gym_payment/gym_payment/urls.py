@@ -2,6 +2,8 @@
 from django.contrib import admin
 from django.urls import path, include
 from users import views
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     path('register/', views.register_user, name='register_user'),
@@ -10,3 +12,5 @@ urlpatterns = [
     path('add_payment/', views.add_payment, name='add_payment'),
     path('payment_list/', views.payment_list, name='payment_list'),
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

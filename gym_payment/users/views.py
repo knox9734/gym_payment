@@ -9,6 +9,7 @@ from barcode.writer import ImageWriter
 from PIL import Image,ImageDraw, ImageFont
 import os
 from django.db.models import Q
+from django.core.paginator import Paginator
 
 def register_user(request):
     if request.method == 'POST':
@@ -87,7 +88,12 @@ def user_list(request):
         users = User.objects.filter(Q(code__icontains=query) | Q(phone_number__icontains=query))
     else:
         users = User.objects.all()
-    return render(request, 'users/user_list.html', {'users': users, 'query': query})
+    
+    paginator = Paginator(users, 15)  # Show 15 users per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'users/user_list.html', {'page_obj': page_obj, 'query': query})
 
 def delete_user(request, user_id):
     user = get_object_or_404(User, id=user_id)

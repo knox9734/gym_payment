@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
+{% extends 'users/base.html' %}
 <head>
-  <title>User List</title>
+  <title>{% block title %}User list{% endblock %}</title>
+  {% block content %}
   <style>
     table {
       border-collapse: collapse;
@@ -49,9 +51,37 @@
     a:hover {
       text-decoration: underline;
     }
+    
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    
+    .pagination a {
+      margin: 0 5px;
+      padding: 8px 16px;
+      border: 1px solid #ddd;
+      color: #007bff;
+      text-decoration: none;
+    }
+    
+    .pagination a:hover {
+      background-color: #f5f5f5;
+    }
+    
+    .pagination .current {
+      margin: 0 5px;
+      padding: 8px 16px;
+      border: 1px solid #ddd;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+    }
   </style>
 </head>
 <body>
+
   <h1>User List</h1>
   
   <form method="get" action="{% url 'user_list' %}">
@@ -72,7 +102,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for user in users %}
+      {% for user in page_obj %}
       <tr>
         <td>{{ user.first_name }}</td>
         <td>{{ user.last_name }}</td>
@@ -87,5 +117,21 @@
       {% endfor %}
     </tbody>
   </table>
+  
+  <div class="pagination">
+    {% if page_obj.has_previous %}
+      <a href="?page=1{% if query %}&q={{ query }}{% endif %}">&laquo; first</a>
+      <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">previous</a>
+    {% endif %}
+    
+    <span class="current">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">next</a>
+      <a href="?page={{ page_obj.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}">last &raquo;</a>
+    {% endif %}
+  </div>
+  
+  {% endblock %}
 </body>
 </html>

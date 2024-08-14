@@ -3,6 +3,8 @@
 {% block title %}Add Payment{% endblock %}
 
 {% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/add_payment.css' %}">
 <h1>Add Payment for Next 30 Days</h1>
 <form method="post" action="{% url 'add_payment' %}">
     {% csrf_token %}

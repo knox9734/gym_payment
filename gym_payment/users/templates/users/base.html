@@ -2,13 +2,18 @@
 <html>
 <head>
     {% load static %}
-    <title>{% block title %}My Application{% endblock %}</title>
+    <title>{% block title %}Dolphin Fitness{% endblock %}</title>
     <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
 </head>
 <body>
     <header>
         <nav>
-            <ul>
+            <div class="nav-left">
+                <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo">
+                <span class="app-name">Dolphin Fitness</span>
+            </div>
+            <ul class="nav-right">
+                <li><a href="{% url 'register_user' %}">Register user</a></li>
                 <li><a href="{% url 'user_list' %}">Users</a></li>
                 <li><a href="{% url 'add_payment' %}">Add Payment</a></li>
                 <li><a href="{% url 'payment_list' %}">Payment List</a></li>
@@ -19,7 +24,7 @@
         {% block content %}{% endblock %}
     </main>
     <footer>
-        <p>&copy; 2023 My Application</p>
+        <p>&copy; 2023 Dolphin Fitness</p>
     </footer>
 </body>
 </html>
