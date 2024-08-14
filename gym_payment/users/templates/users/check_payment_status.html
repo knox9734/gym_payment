@@ -5,50 +5,91 @@
   <title>{% block title %}Check Payment Status{% endblock %}</title>
   {% block content %}
   <style>
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 50vh; /* Reduced viewport height */
+      flex-direction: column;
+      padding: 0; /* Remove padding */
+      margin: 0; /* Remove margin */
+    }
+
     form {
-      margin-bottom: 20px;
+      margin-bottom: 10px; /* Reduced margin */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     
     input[type="text"] {
-      padding: 8px;
+      padding: 8px; /* Reduced padding */
       border: 1px solid #ccc;
       border-radius: 4px;
+      font-size: 14px; /* Reduced font size */
+      width: 250px; /* Reduced width */
+      margin-bottom: 8px; /* Reduced space between input and button */
     }
     
     button[type="submit"] {
-      padding: 8px 16px;
+      padding: 8px 16px; /* Reduced padding */
       background-color: #4CAF50;
       color: white;
       border: none;
       border-radius: 4px;
       cursor: pointer;
+      font-size: 14px; /* Reduced font size */
     }
     
     button[type="submit"]:hover {
       background-color: #45a049;
     }
     
-    .status {
-      margin-top: 20px;
-      font-size: 18px;
+    .status, .error {
+      margin-top: 10px; /* Reduced margin */
+      font-size: 16px; /* Reduced font size */
+      text-align: center;
+    }
+
+    .banner {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 10px;
+      text-align: center;
+      font-size: 16px;
     }
   </style>
 </head>
 <body>
 
-  <h2>Check Payment Status</h2>
-  
-  <form method="get" action="{% url 'check_payment_status' %}">
-    <input type="text" name="code" placeholder="Enter user code" value="{{ code }}">
-    <button type="submit">Check Status</button>
-  </form>
-  
-  {% if user %}
-  <div class="status">
-    <p>User: {{ user.first_name }} {{ user.last_name }}</p>
-    <p>Payment Status: {{ payment_status }}</p>
+  <div class="container">
+    <h2>Check Payment Status</h2>
+    
+    <form method="get" action="{% url 'check_payment_status' %}">
+      <input type="text" name="code" placeholder="Enter user code" value="{{ code }}">
+      <button type="submit">Check Status</button>
+    </form>
+    
+    {% if error_message %}
+    <div class="error">
+      <p>{{ error_message }}</p>
+    </div>
+    {% elif user %}
+    <div class="status">
+      <p>User: {{ user.first_name }} {{ user.last_name }}</p>
+      <p>Payment Status: {{ payment_status }}</p>
+      <p>Days Remaining: {{ remaining_days }}</p>
+    </div>
+    {% if payment_status == 'active' %}
+    <div class="banner">
+      <p>Payment Status: Active</p>
+      <p>Days Remaining: {{ remaining_days }}</p>
+    </div>
+    {% endif %}
+    {% endif %}
   </div>
-  {% endif %}
   
   {% endblock %}
 </body>

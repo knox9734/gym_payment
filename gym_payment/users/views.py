@@ -12,6 +12,7 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from datetime import datetime
 from datetime import timedelta
+from django.http import Http404
 
 def register_user(request):
     if request.method == 'POST':
@@ -131,16 +132,27 @@ def check_payment_status(request):
     code = request.GET.get('code')
     user = None
     payment_status = None
+    error_message = None
 
     if code:
-        user = get_object_or_404(User, code=code)
-        payment = Payment.objects.filter(user=user).order_by('-expiration_date').first()
-        if payment:
-            if payment.expiration_date < datetime.now().date():
-                payment_status = 'Expired'
+        try:
+            user = get_object_or_404(User, code=code)
+            payment = Payment.objects.filter(user=user).order_by('-expiration_date').first()
+            if payment:
+                if payment.expiration_date < datetime.now().date():
+                    payment_status = 'Expired'
+                else:
+                    remaining_days = (payment.expiration_date - datetime.now().date()).days
+                    payment_status = 'Active'
             else:
-                payment_status = 'Active'
-        else:
-            payment_status = 'No payment details found'
-
-    return render(request, 'users/check_payment_status.html', {'user': user, 'payment_status': payment_status, 'code': code})
+                payment_status = 'No payment details found'
+        except Http404:
+            error_message = 'User not found'
+    print(remaining_days)
+    return render(request, 'users/check_payment_status.html', {
+        'user': user,
+        'payment_status': payment_status,
+        'code': code,
+        'error_message': error_message,
+        'remaining_days': remaining_days if payment_status == 'Active' else None
+    })
