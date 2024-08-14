@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+  <title>Payment Expired</title>
+  <style>
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh; /* Full viewport height */
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .banner {
+      background-color: red;
+      color: white;
+      padding: 20px;
+      border-radius: 4px;
+      font-size: 18px;
+      animation: flash 1s infinite;
+    }
+
+    @keyframes flash {
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="banner">
+      <p>Warning: Your payment has expired!</p>
+      <p>Please renew your access.</p>
+    </div>
+  </div>
+
+  <audio id="alarm" src="{% static 'audio/alarm.mp3' %}" autoplay></audio>
+
+  <script>
+    window.onload = function() {
+      var alarm = document.getElementById('alarm');
+      alarm.play();
+      setTimeout(function() {
+        window.location.href = "{% url 'check_payment_status' %}";
+      }, 10000); // Redirect after 10 seconds
+    }
+  </script>
+
+</body>
+</html>

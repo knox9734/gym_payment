@@ -121,7 +121,7 @@ def add_payment(request):
 def calculate_expiration_date():
     # Calculate the expiration date based on your logic
     # For example, you can add a fixed number of days to the current date
-    expiration_date = datetime.now().date() + timedelta(days=15)
+    expiration_date = datetime.now().date() + timedelta(days=28)
     return expiration_date
 
 def payment_list(request):
@@ -141,14 +141,20 @@ def check_payment_status(request):
             if payment:
                 if payment.expiration_date < datetime.now().date():
                     payment_status = 'Expired'
+                    return render(request, 'users/payment_expired.html')
                 else:
                     remaining_days = (payment.expiration_date - datetime.now().date()).days
                     payment_status = 'Active'
+                    return render(request, 'users/welcome.html', {
+                            'remaining_days': remaining_days,
+                        })
             else:
                 payment_status = 'No payment details found'
+                return render(request, 'users/payment_expired.html')
         except Http404:
             error_message = 'User not found'
-    print(remaining_days)
+            return render(request, 'users/payment_expired.html')
+    
     return render(request, 'users/check_payment_status.html', {
         'user': user,
         'payment_status': payment_status,

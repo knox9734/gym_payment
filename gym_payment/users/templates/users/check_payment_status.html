@@ -68,7 +68,7 @@
     <h2>Check Payment Status</h2>
     
     <form method="get" action="{% url 'check_payment_status' %}">
-      <input type="text" name="code" placeholder="Enter user code" value="{{ code }}">
+      <input type="text" name="code" placeholder="Enter user code" value="{{ code|default_if_none:'' }}" id="user-code">
       <button type="submit">Check Status</button>
     </form>
     
@@ -90,6 +90,12 @@
     {% endif %}
     {% endif %}
   </div>
+  
+  <script>
+    window.onload = function() {
+      document.getElementById('user-code').focus();
+    }
+  </script>
   
   {% endblock %}
 </body>

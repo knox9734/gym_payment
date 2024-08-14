@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome to Dolphin Fitness</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Full viewport height */
+            flex-direction: column;
+            text-align: center;
+            background: linear-gradient(to bottom, #4CAF50, #FFFFFF); /* Gradient pattern */
+        }
+
+        .banner {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            border-radius: 4px;
+            font-size: 18px;
+        }
+    </style>
+    <script>
+        // Redirect back to the payment check page after 20 seconds
+        setTimeout(function() {
+            window.location.href = "{% url 'check_payment_status' %}";
+        }, 20000);
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <div class="banner">
+            <p>Welcome to Dolphin Fitness!</p>
+            <p>Your login is approved.</p>
+            <p>Days Remaining: {{ remaining_days }}</p>
+        </div>
+        <p>You will be redirected back to the payment check page in 20 seconds.</p>
+    </div>
+
+</body>
+</html>
