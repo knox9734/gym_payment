@@ -3,6 +3,7 @@
 {% block title %}Payment List{% endblock %}
 
 {% block content %}
+
 <style>
     .payment-table {
         width: 100%;
@@ -49,6 +50,35 @@
     .pagination .step-links a:hover {
         background-color: #ddd;
     }
+
+    #floating-alert {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    background-color: #28a745;
+    color: white;
+    border-radius: 5px;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.5s;
+    display: none;  /* Initially hidden */
+}
+
+    .close-alert {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        float: right;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
 </style>
 
 <h1>Payment List</h1>
@@ -66,19 +96,30 @@
             <th>Code</th>
             <th>Payment Date</th>
             <th>Expiration Date</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
         {% for payment in page_obj %}
-        <tr>
+        <tr id="payment-row-{{ payment.id }}">
             <td>{{ payment.user.first_name }} {{ payment.user.last_name }}</td>
             <td>{{ payment.user.code }}</td>
-            <td>{{ payment.payment_date }}</td>
-            <td>{{ payment.expiration_date }}</td>
+            <td>
+                <span class="payment-date" id="payment-date-{{ payment.id }}">{{ payment.payment_date }}</span>
+                <input type="date" class="edit-payment-date" id="edit-payment-date-{{ payment.id }}" value="{{ payment.payment_date }}" style="display:none;">
+            </td>
+            <td>
+                <span class="expiration-date" id="expiration-date-{{ payment.id }}">{{ payment.expiration_date }}</span>
+                <input type="date" class="edit-expiration-date" id="edit-expiration-date-{{ payment.id }}" value="{{ payment.expiration_date }}" style="display:none;">
+            </td>
+            <td>
+                <button class="edit-btn" data-code="{{ payment.user.code }}">Edit</button>
+                <button class="save-btn" data-code="{{ payment.user.code }}" style="display:none;">Save</button>
+            </td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="4">No payments found.</td>
+            <td colspan="5">No payments found.</td>
         </tr>
         {% endfor %}
     </tbody>
@@ -104,5 +145,79 @@
         {% endif %}
     </span>
 </div>
+
+<div id="floating-alert">
+    <div class="alert-content"></div>
+    <button class="close-alert" onclick="document.getElementById('floating-alert').style.display='none'">&times;</button>
+</div>
+
+<script>
+    document.querySelectorAll('.edit-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const row = button.closest('tr');
+            const paymentDateField = row.querySelector('.edit-payment-date');
+            const expirationDateField = row.querySelector('.edit-expiration-date');
+    
+            // Show the input fields and hide the text
+            paymentDateField.style.display = 'inline';
+            expirationDateField.style.display = 'inline';
+            row.querySelector('.payment-date').style.display = 'none';
+            row.querySelector('.expiration-date').style.display = 'none';
+            button.style.display = 'none';
+            row.querySelector('.save-btn').style.display = 'inline';
+        });
+    });
+    
+    document.querySelectorAll('.save-btn').forEach(button => {
+        button.addEventListener('click', async () => {
+            const row = button.closest('tr');
+            const code = button.getAttribute('data-code');
+            const paymentDate = row.querySelector('.edit-payment-date').value;
+            const expirationDate = row.querySelector('.edit-expiration-date').value;
+
+            const response = await fetch(`/update_payment/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ code: code, payment_date: paymentDate, expiration_date: expirationDate })
+            });
+
+            if (response.ok) {
+                const data = await response.json();  // Get the JSON response
+                const paymentDetails = data.payment; // Extract payment details
+
+                // Show the floating alert with payment details
+                const alertContainer = document.getElementById('floating-alert');
+                alertContainer.querySelector('.alert-content').innerHTML = `
+                    <strong>Success!</strong> Your payment has been updated. <br>
+                    <strong>User Code:</strong> ${paymentDetails.code} <br>
+                    <strong>User Name:</strong> ${paymentDetails.name} <br>
+                    <strong>Payment Date:</strong> ${paymentDetails.payment_date} <br>
+                    <strong>Expiration Date:</strong> ${paymentDetails.expiration_date} <br>
+                    Thank you for your prompt action!
+                `;
+                alertContainer.style.display = 'block';  // Show the alert
+
+                // Optionally reload the page or update the UI as needed
+                setTimeout(() => {
+                    location.reload();  // Reload the page after a delay, if desired
+                }, 3000); // Adjust delay as needed
+            } else {
+                const errorData = await response.json();  // Get error details
+                alert('Error: ' + errorData.message);  // Show error message
+            }
+        });
+    });
+
+    // Auto-dismiss the floating alert after a delay
+    setTimeout(() => {
+        const alert = document.getElementById('floating-alert');
+        if (alert) {
+            alert.style.display = 'none';
+        }
+    }, 5000);  // Dismiss after 5 seconds if already displayed
+</script>
 
 {% endblock %}
